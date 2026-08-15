@@ -1,0 +1,45 @@
+<Project>
+  <ItemGroup>
+    <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
+    <PackageReference Include="UnityEngine.Modules" Version="2022.3.62" IncludeAssets="compile" />
+    <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <Target Name="DropDuplicateIgnoresAccessChecksTo" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <Compile Remove="@(Compile)" Condition="'%(Filename)' == 'IgnoresAccessChecksToAttribute'" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <Publicize Include="Assembly-CSharp" />
+    <Publicize Include="unsafeAssem" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(AicManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="unsafeAssem">
+      <HintPath>$(AicManagedDir)\unsafeAssem.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="better">
+      <HintPath>$(AicManagedDir)\better.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="pixelliner">
+      <HintPath>$(AicManagedDir)\pixelliner.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(AicManagedDir)\Newtonsoft.Json.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

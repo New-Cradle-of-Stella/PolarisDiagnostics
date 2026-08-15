@@ -1,0 +1,25 @@
+<Project>
+
+  <!--
+    游戏程序集的位置。优先级：Directory.Build.props.user > 环境变量 AIC_GAME_DIR > 默认值。
+    Directory.Build.props.user 已被 .gitignore 忽略，用来在别的机器上改路径而不污染仓库。
+  -->
+  <Import Project="Directory.Build.props.user" Condition="Exists('Directory.Build.props.user')" />
+
+  <PropertyGroup>
+    <!--
+      编译期引用的是一份"干净"的游戏安装（不装 BepInEx），与部署目标刻意分开——
+      部署目标由仓库根目录 deploy-polaris.ps1 的必填 -AicPath 参数指定。
+      两者混用会让"引用的程序集"和"运行时加载的程序集"来自同一份被模组污染过的安装。
+    -->
+    <AicGameDir Condition="'$(AicGameDir)' == '' And '$(AIC_GAME_DIR)' != ''">$(AIC_GAME_DIR)</AicGameDir>
+    <AicGameDir Condition="'$(AicGameDir)' == ''">D:\AliceInCradle Win ver029\AliceInCradle_ver029</AicGameDir>
+    <AicManagedDir>$(AicGameDir)\AliceInCradle_Data\Managed</AicManagedDir>
+  </PropertyGroup>
+
+  <Target Name="CheckAicGameDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(AicManagedDir)')"
+           Text="找不到游戏程序集目录：$(AicManagedDir)&#xA;请设置环境变量 AIC_GAME_DIR 指向游戏根目录（含 AliceInCradle_Data 的那一层），或在仓库根新建 Directory.Build.props.user 覆盖 AicGameDir。" />
+  </Target>
+
+</Project>
