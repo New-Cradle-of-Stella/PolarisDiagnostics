@@ -1,25 +1,30 @@
 <Project>
 
   <!--
-    游戏程序集的位置。优先级：Directory.Build.props.user > 环境变量 AIC_GAME_DIR > 默认值。
-    Directory.Build.props.user 已被 .gitignore 忽略，用来在别的机器上改路径而不污染仓库。
+    游戏程序集的位置。唯一来源是 aic_path.txt：单行纯文本，内容就是游戏根目录
+    （含 AliceInCradle_Data 的那一层）。前后空白和成对的引号会被去掉，别的什么都不解析，
+    所以不要往里写注释行。
+
+    不再读环境变量 AIC_GAME_DIR，也不再有硬编码的默认路径，也不再看
+    Directory.Build.props.user——换机器只改 aic_path.txt 这一个文件。
+
+    GetPathOfFileAbove 从本文件所在目录逐级往上找 aic_path.txt：放在仓库根目录就覆盖
+    全部子模块；子模块被单独 clone 出去时，放在子模块自己的目录里同样能找到。
+    临时想用另一份游戏安装编译，命令行 -p:AicGameDir=... 依然优先。
   -->
-  <Import Project="Directory.Build.props.user" Condition="Exists('Directory.Build.props.user')" />
 
   <PropertyGroup>
-    <!--
-      编译期引用的是一份"干净"的游戏安装（不装 BepInEx），与部署目标刻意分开——
-      部署目标由仓库根目录 deploy-polaris.ps1 的必填 -AicPath 参数指定。
-      两者混用会让"引用的程序集"和"运行时加载的程序集"来自同一份被模组污染过的安装。
-    -->
-    <AicGameDir Condition="'$(AicGameDir)' == '' And '$(AIC_GAME_DIR)' != ''">$(AIC_GAME_DIR)</AicGameDir>
-    <AicGameDir Condition="'$(AicGameDir)' == ''">D:\AliceInCradle Win ver029\AliceInCradle_ver029</AicGameDir>
-    <AicManagedDir>$(AicGameDir)\AliceInCradle_Data\Managed</AicManagedDir>
+    <AicPathFile Condition="'$(AicPathFile)' == ''">$([MSBuild]::GetPathOfFileAbove('aic_path.txt'))</AicPathFile>
+    <AicGameDirRaw Condition="'$(AicGameDir)' == '' And '$(AicPathFile)' != ''">$([System.IO.File]::ReadAllText($(AicPathFile)))</AicGameDirRaw>
+    <AicGameDir Condition="'$(AicGameDir)' == '' And '$(AicGameDirRaw)' != ''">$(AicGameDirRaw.Trim().Trim('"'))</AicGameDir>
+    <AicManagedDir Condition="'$(AicGameDir)' != ''">$(AicGameDir)\AliceInCradle_Data\Managed</AicManagedDir>
   </PropertyGroup>
 
   <Target Name="CheckAicGameDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="'$(AicGameDir)' == ''"
+           Text="aic_path.txt not found (searched upwards from $(MSBuildThisFileDirectory)).&#xA;Create aic_path.txt in the repository root. It must hold a single line: the AliceInCradle install directory, i.e. the one that contains AliceInCradle_Data." />
     <Error Condition="!Exists('$(AicManagedDir)')"
-           Text="找不到游戏程序集目录：$(AicManagedDir)&#xA;请设置环境变量 AIC_GAME_DIR 指向游戏根目录（含 AliceInCradle_Data 的那一层），或在仓库根新建 Directory.Build.props.user 覆盖 AicGameDir。" />
+           Text="Game assembly directory not found: $(AicManagedDir)&#xA;Fix the path in $(AicPathFile) -- it must point at the AliceInCradle install directory, i.e. the one that contains AliceInCradle_Data." />
   </Target>
 
 </Project>
