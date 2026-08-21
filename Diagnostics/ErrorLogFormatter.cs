@@ -33,11 +33,12 @@ namespace Polaris.Diagnostics
             }
 
             // 已点名主责时不复述嫌疑人，仅在还有其他嫌疑人时列出。
-            var others = verdict.Suspects.Where(suspect => suspect.Owner != verdict.Culprit).ToList();
+            List<ErrorSuspect> others =
+                verdict.Suspects.Where(suspect => suspect.Owner != verdict.Culprit).ToList();
             if (others.Count > 0)
             {
                 logger.LogError($"[Polaris] Other suspects: {Join(others.Take(MaxSuspectLines))}"
-                                + (others.Count > MaxSuspectLines ? $" and {others.Count} more" : string.Empty));
+                                + (others.Count > MaxSuspectLines ? $" and {others.Count - MaxSuspectLines} more" : string.Empty));
             }
 
             string report = ErrorReportWriter.LastWrittenPath;

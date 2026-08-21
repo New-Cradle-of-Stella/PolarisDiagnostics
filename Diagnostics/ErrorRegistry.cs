@@ -39,6 +39,12 @@ namespace Polaris.Diagnostics
         /// <summary>Debug.LogError / 插件 LogError 这类无异常错误的次数，只计数不建档。</summary>
         internal static long LoggedErrors { get; private set; }
 
+        /// <summary>本局已归档的错误（按指纹去重），按首次出现顺序。</summary>
+        internal static IReadOnlyList<ErrorIncident> Incidents => incidents;
+
+        /// <summary>有新错误归档时触发。订阅者抛异常会被吞掉，不影响其它订阅者与后续流程。</summary>
+        internal static event Action<ErrorIncident> Recorded;
+
         /// <summary>记若干次非异常的错误日志。</summary>
         internal static void CountLoggedErrors(long count)
         {
@@ -52,12 +58,6 @@ namespace Polaris.Diagnostics
                 LoggedErrors += count;
             }
         }
-
-        /// <summary>本局已归档的错误（按指纹去重），按首次出现顺序。</summary>
-        internal static IReadOnlyList<ErrorIncident> Incidents => incidents;
-
-        /// <summary>有新错误归档时触发。订阅者抛异常会被吞掉，不影响其它订阅者与后续流程。</summary>
-        internal static event Action<ErrorIncident> Recorded;
 
         // ================== 提交 ==================
 

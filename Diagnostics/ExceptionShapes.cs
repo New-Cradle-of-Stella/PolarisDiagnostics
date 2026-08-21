@@ -93,7 +93,7 @@ namespace Polaris.Diagnostics
             }
         }
 
-        /// <summary>去掉命名空间与泛型标记，只留类名。</summary>
+        /// <summary>去掉命名空间，只留类名。</summary>
         static string Simplify(string typeName)
         {
             int dot = typeName.LastIndexOf('.');

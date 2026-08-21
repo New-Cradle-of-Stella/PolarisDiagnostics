@@ -112,6 +112,9 @@ namespace Polaris.Diagnostics
 
             string location = SafeLocation(assembly);
 
+            // 路径信息与分类无关，且 Locate 对空路径是空操作，故统一先填。
+            Locate(owner, location);
+
             // 1. 自己：不依赖路径推断，避免分发方式影响判断。
             if (DiagnosticsRuntime.IsPolarisAssembly(assembly))
             {
@@ -119,7 +122,6 @@ namespace Polaris.Diagnostics
                 owner.PluginGuid = assembly == DiagnosticsRuntime.CoreAssembly
                     ? DiagnosticsRuntime.PluginGuid
                     : null;
-                Locate(owner, location);
                 return owner;
             }
 
@@ -129,8 +131,6 @@ namespace Polaris.Diagnostics
                 owner.Kind = OwnerKind.Dynamic;
                 return owner;
             }
-
-            Locate(owner, location);
 
             // 3. 游戏 Managed 目录：原版本体，或按名字再细分出引擎/BCL。
             if (IsUnder(location, ManagedDir))
