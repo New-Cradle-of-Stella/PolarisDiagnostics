@@ -365,7 +365,8 @@ FodyWeavers.xsd
 # 本机路径覆盖（游戏安装位置等），见 Directory.Build.props
 Directory.Build.props.user
 
-# Claude Code 的本机工具授权列表：全是这台机器上的绝对路径，对别人没有意义
+# AI 编码工具的本机状态
 .claude/
-
+.codex/
 .codex-work/
+.agents/

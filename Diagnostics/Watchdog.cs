@@ -5,8 +5,8 @@ using System.Threading;
 namespace Polaris.Diagnostics
 {
     /// <summary>
-    /// 卡死看门狗：后台线程监视主线程是否还在推进帧（<see cref="MainThreadBeat"/>），弥补异常捕获无法
-    /// 发现死循环/死锁的缺口。两级升级：先警告，超阈值再写报告并上膛下一局告知；默认不杀进程。
+    /// 卡死看门狗：后台线程监视主线程是否还在推进帧（<see cref="MainThreadBeat"/>），弥补异常捕获无法发现死循环/死锁的缺口，
+    /// 两级升级为先警告、超阈值再写报告并上膛下一局告知，默认不杀进程。
     /// 该线程绝不能访问 Unity API（主线程此刻可能正卡着），所有 Unity 侧数据都经主线程采样。
     /// </summary>
     internal static class Watchdog

@@ -5,9 +5,9 @@ using BepInEx.Configuration;
 namespace Polaris.Diagnostics
 {
     /// <summary>
-    /// 崩溃/卡死检测的阈值与开关，存在 <c>BepInEx/config/Polaris/_polaris_diagnostics.cfg</c>。
-    /// 刻意不走 <see cref="Settings.PolarisSettingAttribute"/>（不进游戏设置界面，且需要在
-    /// <c>Awake</c> 就绑定完成，早于特性轨扫描）。绑定失败则整体退回默认值。
+    /// 崩溃/卡死检测的阈值与开关，存在 <c>BepInEx/config/Polaris/_polaris_diagnostics.cfg</c>，刻意不走
+    /// <see cref="Settings.PolarisSettingAttribute"/>：它不进游戏设置界面，且需要在 <c>Awake</c> 就绑定完成，早于特性轨扫描。
+    /// 绑定失败则整体退回默认值。
     /// </summary>
     internal static class DiagnosticsConfig
     {
